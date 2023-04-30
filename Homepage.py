@@ -59,13 +59,18 @@ def run_query(query):
         cur.execute(query)
         return cur.fetchall()
 
+def createSentence(lista: list):
+    sentence = f"('{lista[0]}'"
+    if len(lista) > 1:
+        for c in range(1, len(lista)):
+            sentence += ",'" + lista[c] + "'"
+        sentence += ")"
+    return sentence
 
 if buttonSearch:
-    sentence = "("
-    for c in country:
-        sentence += "'" + str(c) + "',"
-    sentence += ")"
-    paises = "".join(country)
+    
+    #Funcion que retorna los paises seleccionados en forma de query
+    sentence = createSentence(country)
     
     rows = run_query(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
     # Print results.
