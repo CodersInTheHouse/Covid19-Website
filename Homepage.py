@@ -65,7 +65,7 @@ if buttonSearch:
     rows = run_query("select * from DatosCovid as dc where dc.Date >= '2020-01-12' and dc.Date < '2020-01-13';")
     # Print results.
     for row in rows:
-        st.write(f"{row[0]}{row[1]}{row[2]}{row[3]}{row[4]}{row[5]}{row[6]}")
+        st.write(f"{row[0]} - {row[1]} - {row[2]} - {row[3]} - {row[4]}")
         
 
 
