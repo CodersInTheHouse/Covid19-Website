@@ -61,14 +61,14 @@ def run_query(query):
 
 def createSentence(lista: list):
     sentence = f"('{lista[0]}'"
+    print(f'LEN:{len(lista)}')
     if len(lista) > 1:
         for c in range(1, len(lista)):
             sentence += ",'" + lista[c] + "'"
-        sentence += ")"
+    sentence += ")"
     return sentence
 
 if buttonSearch:
-    
     #Funcion que retorna los paises seleccionados en forma de query
     sentence = createSentence(country)
     
