@@ -7,24 +7,6 @@ from datetime import date, timedelta
 st.set_page_config(page_title= "Covid-19 Data", page_icon=":bar_chart:", layout="wide")
 
 
-#SIDE BAR 
-st.sidebar.header('Please choose the items below:')
-
-#SELECT COUNTRY
-country = st.sidebar.multiselect(
-    'Select country', ['Argentina','Canada', 'China', 'Colombia','France', 'Germany','Great Britain', 'Italy', 'Mexico', 'United States'], max_selections=4,
-)
-
-#SELECT VARIABLES
-variables = st.sidebar.selectbox(
-    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccunated', 'ICU patient', 'Positive test' )
-)
-
-today = date.today()
-default_date_yesterday = today - timedelta(days=1)
-date_inicio = date(2020, 3, 10) #date inicio pandemia
-date_fin = date(2023,1,21) #date fin pandemia
-
 # Initialize connection.
 # Uses st.cache_resource to only run once.
 @st.cache_resource
@@ -42,6 +24,26 @@ def init_connection():
 
 conn = init_connection()
 
+
+#SIDE BAR 
+st.sidebar.header('Please choose the items below:')
+
+#SELECT COUNTRY
+country = st.sidebar.multiselect(
+    'Select country', ['Argentina','Canada', 'China', 'Colombia','France', 'Germany','Great Britain', 'Italy', 'Mexico', 'United States'], max_selections=4,
+)
+
+#SELECT VARIABLES
+variables = st.sidebar.selectbox(
+    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccunated', 'ICU patient', 'Positive test' )
+)
+
+#BUTTON
+buttonSearch = st.sidebar.button('Search')
+
+date_inicio = date(2020, 3, 10) #date inicio pandemia
+date_fin = date(2023,1,21) #date fin pandemia
+
 #SELECT DATAS
 start_date = st.sidebar.date_input('Start Date', 
                                    value= date_inicio, 
@@ -53,8 +55,6 @@ end_date = st.sidebar.date_input('End Date',
                                  min_value= date_inicio, 
                                  max_value= date_fin)
 
-#BUTTON
-buttonSearch = st.sidebar.button('Search')
 
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
