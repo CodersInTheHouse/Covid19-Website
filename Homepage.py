@@ -1,9 +1,8 @@
 import streamlit as st 
 import datetime as dt
 import pandas as pd
-from streamlit_option_menu import option_menu
 from datetime import date, timedelta
-import plotly.express as px
+#import plotly.express as px
 
 st.set_page_config(page_title= "Covid-19 Data", page_icon=":bar_chart:", layout="wide")
 
