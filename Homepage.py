@@ -22,6 +22,8 @@ variables = st.sidebar.selectbox(
 
 today = date.today()
 default_date_yesterday = today - timedelta(days=1)
+date_inicio = date(2020, 3, 10) #date inicio pandemia
+date_fin = date(2023,1,21) #date fin pandemia
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
@@ -41,15 +43,18 @@ def init_connection():
 conn = init_connection()
 
 #SELECT DATAS
-start_date = st.sidebar.date_input('Start Date', default_date_yesterday)
-end_date = st.sidebar.date_input('End Date', default_date_yesterday)
+start_date = st.sidebar.date_input('Start Date', 
+                                   value= date_inicio, 
+                                   min_value= date_inicio, 
+                                   max_value= date_fin)
+
+end_date = st.sidebar.date_input('End Date', 
+                                 value = date_fin,
+                                 min_value= date_inicio, 
+                                 max_value= date_fin)
 
 #BUTTON
 buttonSearch = st.sidebar.button('Search')
-
-def createQuery():
-    pass
-
 
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
@@ -61,22 +66,32 @@ def run_query(query):
 
 def createSentence(lista: list):
     sentence = f"('{lista[0]}'"
-    print(f'LEN:{len(lista)}')
     if len(lista) > 1:
         for c in range(1, len(lista)):
             sentence += ",'" + lista[c] + "'"
     sentence += ")"
     return sentence
 
-if buttonSearch:
-    #Funcion que retorna los paises seleccionados en forma de query
-    sentence = createSentence(country)
-    
-    rows = run_query(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
-    # Print results.
-    for row in rows:
-        st.write(f"{row[0]} - {row[1]} - {row[2]} - {row[3]} - {row[4]}")
+def isAllCorrect() -> bool:
+    return len(country) > 0
 
+
+if buttonSearch:
+    if isAllCorrect():
+        #Funcion que retorna los paises seleccionados en forma de query
+        sentence = createSentence(country)
+        
+        rows = run_query(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
+        # Print results.
+        for row in rows:
+            st.write(f"{row[0]} - {row[1]} - {row[2]} - {row[3]} - {row[4]}")
+    else:
+        st.warning("Sorry, there's been a problem filling those boxes 🧐🧐")
+        st.info("Please check and hit that search button again! 🤞")
+else:
+    st.info("Welcome to our webpage!")
+    st.write("Here you can see really interesenting graphs related to COVID-19")
+    st.success("To visualizes the graphics. Fill the boxes on your left 👈")
 
 #HIDE LINES MENU AND MADE WITH STREAMLIT 
 hide_st_style = """
