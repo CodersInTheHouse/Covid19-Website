@@ -61,14 +61,16 @@ def run_query(query):
 
 
 if buttonSearch:
-    print("Button")
-    rows = run_query("select * from DatosCovid as dc where dc.Date >= '2020-01-12' and dc.Date < '2020-01-13';")
+    sentence = "("
+    for c in country:
+        sentence += "'" + str(c) + "',"
+    sentence += ")"
+    paises = "".join(country)
+    
+    rows = run_query(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
     # Print results.
     for row in rows:
         st.write(f"{row[0]} - {row[1]} - {row[2]} - {row[3]} - {row[4]}")
-        
-
-
 
 
 #HIDE LINES MENU AND MADE WITH STREAMLIT 
