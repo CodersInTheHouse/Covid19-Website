@@ -49,8 +49,20 @@ country = st.sidebar.multiselect(
 
 #SELECT VARIABLES
 variables = st.sidebar.selectbox(
-    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccunated', 'ICU patient', 'Positive test' )
+    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccinated', 'ICU patient', 'Positive test' )
 )
+
+match variables:
+    case 'Confirmed cases':
+        rVar='total_cases'
+    case 'Confirmed deaths':
+        rVar='total_deaths'
+    case 'Fully vaccunated':
+        rVar='people_fully_vaccinated'
+    case 'ICU patient':
+        rVar='icu_patients'
+    case 'Positive test':
+        rVar='icu_patients'
 
 
 date_inicio = date(2020, 3, 10) #date inicio pandemia
@@ -100,7 +112,7 @@ def isAllCorrect() -> bool:
     return len(country) > 0
 
 #Tabs
-tab0, tab1, tab2, tab3 = st.tabs(['Query','Line','Bars','¿?'])
+tab0, tab1, tab2 = st.tabs(['Query','Line','Bars'])
 
 if buttonSearch:
     if isAllCorrect():
@@ -114,26 +126,24 @@ if buttonSearch:
         #for row in rows:
         #    st.write(f"{row[0]} - {row[1]} - {row[2]} - {row[3]} - {row[4]}")
         with tab0:
-            data = run_queryDF(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
+            data = run_queryDF(f"select dc.Location,dc.Date,dc.{rVar} from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
             st.table(data)
 
         with tab1:
             st.subheader(f'Linechar for: {pSentence}')
-            
-            data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.total_cases) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
+
+            data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
             st.line_chart(data=data1,x='mes', y='total')
 
         with tab2:
             st.subheader(f'Barchar for: {pSentence}')
             if len(country)>1:
-                data2 = run_queryDF(f"select dc.Location, max(dc.total_cases) as total from DatosCovid dc where dc.Location in {sentence} and dc.Date >= '{start_date}' and  dc.Date <= '{end_date}' group by dc.Location")
+                data2 = run_queryDF(f"select dc.Location, max(dc.{rVar}) as total from DatosCovid dc where dc.Location in {sentence} and dc.Date >= '{start_date}' and  dc.Date <= '{end_date}' group by dc.Location")
                 st.bar_chart(data=data2,x='Location', y='total')
             else:
-                data2 = run_queryDF(f"select year(dc.Date) as año, max(dc.total_cases) as total from DatosCovid dc where dc.Location in ('Canada') and dc.Date >= '01/01/2020' and  dc.Date <= '01/01/2023' group by year(dc.Date) order by year(dc.Date) asc")
+                data2 = run_queryDF(f"select year(dc.Date) as año, max(dc.{rVar}) as total from DatosCovid dc where dc.Location in ('Canada') and dc.Date >= '01/01/2020' and  dc.Date <= '01/01/2023' group by year(dc.Date) order by year(dc.Date) asc")
                 st.bar_chart(data=data2,x='año', y='total')
 
-        with tab3:
-            st.subheader(f'¿? for: {pSentence}')
     else:
         st.warning("Sorry, there's been a problem filling those boxes 🧐🧐")
         st.info("Please check and hit that search button again! 🤞")
@@ -149,8 +159,6 @@ else:
     with tab2:
         st.info("Here you will see a bar chart of the query you just performed!")
     
-    with tab3:
-        st.info("Here you will see a ¿? of the query you just performed!")
 
 
 
