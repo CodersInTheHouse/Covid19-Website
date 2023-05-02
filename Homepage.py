@@ -44,7 +44,7 @@ st.sidebar.header('Please choose the items below:')
 
 #SELECT COUNTRY
 country = st.sidebar.multiselect(
-    'Select country', ['Argentina','Canada', 'China', 'Colombia','France', 'Germany','Great Britain', 'Italy', 'Mexico', 'United States'], max_selections=4,
+    'Select country', ['Argentina','Canada', 'China', 'Colombia','France', 'Germany','Great Britain', 'Italy', 'Mexico', 'United States'], max_selections=3,
 )
 
 #SELECT VARIABLES
