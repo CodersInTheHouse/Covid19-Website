@@ -52,17 +52,16 @@ variables = st.sidebar.selectbox(
     'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccinated', 'ICU patient', 'Positive test' )
 )
 
-match variables:
-    case 'Confirmed cases':
-        rVar='total_cases'
-    case 'Confirmed deaths':
-        rVar='total_deaths'
-    case 'Fully vaccunated':
-        rVar='people_fully_vaccinated'
-    case 'ICU patient':
-        rVar='icu_patients'
-    case 'Positive test':
-        rVar='icu_patients'
+if (variables=="Confirmed cases"):
+    rVar='total_cases'
+elif (variables=="Confirmed deaths"):
+    rVar='total_deaths'
+elif (variables=="Fully vaccinated"):
+    rVar='people_fully_vaccinated'
+elif(variables=="ICU patient"):
+    rVar='icu_patients'
+else:
+    rVar='positive_rate'
 
 
 date_inicio = date(2020, 3, 10) #date inicio pandemia
@@ -134,6 +133,12 @@ if buttonSearch:
 
             data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
             st.line_chart(data=data1,x='mes', y='total')
+            
+            rows = run_query(f"select dc.Location, month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date), dc.Location order by  month(dc.Date) asc")
+            np.array
+            #dat = pd.DataFrame(data=,columns=country)
+            for row in rows:
+                st.write(f"{row[0]} - {row[1]}-{row[2]}")
 
         with tab2:
             st.subheader(f'Barchar for: {pSentence}')
