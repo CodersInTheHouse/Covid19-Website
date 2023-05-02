@@ -129,16 +129,16 @@ if buttonSearch:
         with tab1:
             st.subheader(f'Linechar for: {pSentence}')
             if len(country)>1:
-                rows = run_query(f"max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date), dc.Location order by dc.Location, month(dc.Date) asc")
-                a = np.array
-                #dat = pd.DataFrame(data=,columns=country)
-                for row in rows:
-                    st.write(f"{row[0]}")
-                pass
+                st.warning("Sorry, this chart can handle only one country at a time 🧐🧐")                
             else:
-                data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
-                st.line_chart(data=data1,x='mes', y='total')
-            
+                #print(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
+                if(rVar=='people_fully_vaccinated'):
+                    data1 = run_queryDF(f"select cast(year(dc.Date) as varchar) + '-' + cast(month(dc.Date) as varchar) as mes, max(dc.people_fully_vaccinated) as total from DatosCovid dc where dc.Location IN {sentence} and dc.Date >= '{start_date}' and dc.Date <= '{end_date}'group by month(dc.Date),year(dc.Date), dc.people_fully_vaccinated order by  year(date),month(dc.Date) asc")
+                    st.line_chart(data=data1, y='total')
+                else:
+                    data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} and dc.Date >= '{start_date}' and dc.Date <= '{end_date}' group by month(dc.Date) order by  month(dc.Date) asc")
+                    st.line_chart(data=data1,x='mes', y='total')
+
             
 
         with tab2:
@@ -147,7 +147,7 @@ if buttonSearch:
                 data2 = run_queryDF(f"select dc.Location, max(dc.{rVar}) as total from DatosCovid dc where dc.Location in {sentence} and dc.Date >= '{start_date}' and  dc.Date <= '{end_date}' group by dc.Location")
                 st.bar_chart(data=data2,x='Location', y='total')
             else:
-                data2 = run_queryDF(f"select year(dc.Date) as año, max(dc.{rVar}) as total from DatosCovid dc where dc.Location in ('Canada') and dc.Date >= '01/01/2020' and  dc.Date <= '01/01/2023' group by year(dc.Date) order by year(dc.Date) asc")
+                data2 = run_queryDF(f"select year(dc.Date) as año, max(dc.{rVar}) as total from DatosCovid dc where dc.Location in ('Canada') and dc.Date >= '{start_date}' and  dc.Date <= '{end_date}' group by year(dc.Date) order by year(dc.Date) asc")
                 st.bar_chart(data=data2,x='año', y='total')
 
     else:
