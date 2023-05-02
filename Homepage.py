@@ -90,6 +90,12 @@ def createSentence(lista: list):
     sentence += ")"
     return sentence
 
+def prettySentence(list:list):
+    text = ','.join(list)
+    if(len(list)>1):
+        text = text.replace(f',{list[-1]}',f' and {list[-1]}')
+    return text
+
 def isAllCorrect() -> bool:
     return len(country) > 0
 
@@ -100,6 +106,7 @@ if buttonSearch:
     if isAllCorrect():
         #Funcion que retorna los paises seleccionados en forma de query
         sentence = createSentence(country)
+        pSentence = prettySentence(country)
         
         #rows = run_query(f"select * from DatosCovid as dc where dc.Date >= '{start_date}' and dc.Date <= '{end_date}' and dc.Location IN {sentence};")
         
@@ -111,19 +118,22 @@ if buttonSearch:
             st.table(data)
 
         with tab1:
-            st.subheader(f'Linechar for: {country}')
-            data2 = run_queryDF(f"select month(dc.Date) as mes,sum(dc.total_cases) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
-            st.line_chart(data=data2,x='mes', y='total')
+            st.subheader(f'Linechar for: {pSentence}')
+            
+            data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.total_cases) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
+            st.line_chart(data=data1,x='mes', y='total')
 
         with tab2:
-            st.subheader(f'Barchar for: {country}')
-            hist_values = np.histogram(data['Date'].dt.month, bins=12, range=(1,13))[0]
-            st.bar_chart(hist_values)
-            year_to_filter = st.slider('year', 2020, 2023, 2021)  # min: 0h, max: 23h, default: 17h
-            #st.barchar()
+            st.subheader(f'Barchar for: {pSentence}')
+            if len(country)>1:
+                data2 = run_queryDF(f"select dc.Location, max(dc.total_cases) as total from DatosCovid dc where dc.Location in {sentence} and dc.Date >= '{start_date}' and  dc.Date <= '{end_date}' group by dc.Location")
+                st.bar_chart(data=data2,x='Location', y='total')
+            else:
+                data2 = run_queryDF(f"select year(dc.Date) as año, max(dc.total_cases) as total from DatosCovid dc where dc.Location in ('Canada') and dc.Date >= '01/01/2020' and  dc.Date <= '01/01/2023' group by year(dc.Date) order by year(dc.Date) asc")
+                st.bar_chart(data=data2,x='año', y='total')
 
         with tab3:
-            st.subheader(f'¿? for: {str(country)}')
+            st.subheader(f'¿? for: {pSentence}')
     else:
         st.warning("Sorry, there's been a problem filling those boxes 🧐🧐")
         st.info("Please check and hit that search button again! 🤞")
