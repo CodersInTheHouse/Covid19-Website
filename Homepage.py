@@ -49,7 +49,7 @@ country = st.sidebar.multiselect(
 
 #SELECT VARIABLES
 variables = st.sidebar.selectbox(
-    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccinated', 'ICU patient', 'Positive test' )
+    'Variables', ('Confirmed cases', 'Confirmed deaths', 'Fully vaccinated', 'ICU patient' )
 )
 
 if (variables=="Confirmed cases"):
@@ -58,10 +58,8 @@ elif (variables=="Confirmed deaths"):
     rVar='total_deaths'
 elif (variables=="Fully vaccinated"):
     rVar='people_fully_vaccinated'
-elif(variables=="ICU patient"):
-    rVar='icu_patients'
 else:
-    rVar='positive_rate'
+    rVar='icu_patients'
 
 
 date_inicio = date(2020, 3, 10) #date inicio pandemia
@@ -130,15 +128,18 @@ if buttonSearch:
 
         with tab1:
             st.subheader(f'Linechar for: {pSentence}')
-
-            data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
-            st.line_chart(data=data1,x='mes', y='total')
+            if len(country)>1:
+                rows = run_query(f"max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date), dc.Location order by dc.Location, month(dc.Date) asc")
+                a = np.array
+                #dat = pd.DataFrame(data=,columns=country)
+                for row in rows:
+                    st.write(f"{row[0]}")
+                pass
+            else:
+                data1 = run_queryDF(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
+                st.line_chart(data=data1,x='mes', y='total')
             
-            rows = run_query(f"select dc.Location, month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date), dc.Location order by  month(dc.Date) asc")
-            np.array
-            #dat = pd.DataFrame(data=,columns=country)
-            for row in rows:
-                st.write(f"{row[0]} - {row[1]}-{row[2]}")
+            
 
         with tab2:
             st.subheader(f'Barchar for: {pSentence}')
