@@ -129,7 +129,7 @@ if buttonSearch:
         with tab1:
             st.subheader(f'Linechar for: {pSentence}')
             if len(country)>1:
-                st.warning("Sorry, this chart can handle only one country at a time 🧐🧐")                
+                st.warning("Sorry, this chart can only handle one country at a time 🧐🧐")                
             else:
                 #print(f"select month(dc.Date) as mes,max(dc.{rVar}) as total from DatosCovid dc where dc.Location IN {sentence} group by month(dc.Date) order by  month(dc.Date) asc")
                 if(rVar=='people_fully_vaccinated'):
